@@ -462,22 +462,31 @@ class Chosen extends AbstractChosen
       this.result_do_highlight do_high if do_high?
 
   no_results: (terms) ->
-    no_results_html = $('<li class="no-results">' + @results_none_found + ' "<span></span>". <a href="javascript:void(0);" class="option-add">Add this item</a></li>')
+    if @options.addOption
+      no_results_html = $('<li class="no-results">' + @results_none_found + ' "<span></span>". <a href="javascript:void(0);" class="option-add">Add this item</a></li>')
+    else
+      no_results_html = $('<li class="no-results">' + @results_none_found + ' "<span></span>"</li>')
+
     no_results_html.find("span").first().html(terms)
     no_results_html.find("a.option-add").bind "click", (evt) => this.select_add_option(terms)
 
     @search_results.append no_results_html
 
   select_add_option: (terms) ->
-    if $.isFunction(@options.addOption) 
-      @options.addOption(terms);
+    if $.isFunction(@options.addOption)
+      @options.addOption.call this, terms, this.select_append_option
     else
       new_option_html = $('<option />', {value: terms}).text(terms)
-      @form_field_jq.append new_option_html
-      @form_field_jq.trigger "liszt:updated"
-      
-    @search_field.val terms
+      this.select_append_option( new_option_html )
+
+  
+  select_append_option: (option) ->
+    @form_field_jq.append option
+    terms = @search_field.val()
+    @form_field_jq.trigger "liszt:updated"
+    $(@search_field).val terms
     @search_field.trigger "keyup"
+    this.form_field_jq.trigger "change"
     this.result_select()
 
   no_results_clear: ->

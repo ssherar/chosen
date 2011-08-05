@@ -468,7 +468,12 @@ class Chosen extends AbstractChosen
       no_results_html = $('<li class="no-results">' + @results_none_found + ' "<span></span>"</li>')
 
     no_results_html.find("span").first().html(terms)
-    no_results_html.find("a.option-add").bind "click", (evt) => this.select_add_option(terms)
+
+    regex = new RegExp('^' + terms + '$', 'i')
+    selected = (option for option in @results_data when regex.test(option.value) and option.selected)
+    if (selected.length == 0)
+      no_results_html.append(' <a href="javascript:void(0);" class="option-add">Add this item</a>')
+      no_results_html.find("a.option-add").bind "click", (evt) => this.select_add_option(terms)
 
     @search_results.append no_results_html
 

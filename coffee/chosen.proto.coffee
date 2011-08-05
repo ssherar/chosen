@@ -11,6 +11,7 @@ class @Chosen extends AbstractChosen
     @single_temp = new Template('<a class="chosen-single chosen-default" tabindex="-1"><span>#{default}</span><div><b></b></div></a><div class="chosen-drop"><div class="chosen-search"><input type="text" autocomplete="off" /></div><ul class="chosen-results"></ul></div>')
     @multi_temp = new Template('<ul class="chosen-choices"><li class="search-field"><input type="text" value="#{default}" class="default" autocomplete="off" style="width:25px;" /></li></ul><div class="chosen-drop"><ul class="chosen-results"></ul></div>')
     @no_results_temp = new Template('<li class="no-results">' + @results_none_found + ' "<span>#{terms}</span>"</li>')
+    @new_option_html = new Template('<option value="#{terms}">#{terms}</option>')
 
   set_up_html: ->
     container_classes = ["chosen-container"]
@@ -398,7 +399,17 @@ class @Chosen extends AbstractChosen
     this.result_do_highlight do_high if do_high?
 
   no_results: (terms) ->
-    @search_results.insert @no_results_temp.evaluate( terms: terms )
+    regex = new RegExp('^' + terms + '$', 'i')
+    selected = (option for option in @results_data when regex.test(option.value) and option.selected)
+    add_item_link = if selected.length == 0 then ' <a href="javascript:void(0);" class="option-add">Add this item</a>' else ''
+    @search_results.insert @no_results_temp.evaluate( terms: terms, add_item_link: add_item_link )
+    if selected.length == 0
+      @search_results.down("a.option-add").observe "click", (evt) => this.select_add_option(terms)
+
+  select_add_option: (terms) ->
+    @form_field.insert @new_option_html.evaluate( terms: terms )
+    Event.fire @form_field, "liszt:updated"
+    this.result_select()
 
   no_results_clear: ->
     nr = null

@@ -400,16 +400,10 @@ class Chosen extends AbstractChosen
     this.result_do_highlight do_high if do_high?
 
   no_results: (terms) ->
-    if @options.addOption
-      no_results_html = $('<li class="no-results">' + @results_none_found + ' "<span></span>". <a href="javascript:void(0);" class="option-add">Add this item</a></li>')
-    else
-      no_results_html = $('<li class="no-results">' + @results_none_found + ' "<span></span>"</li>')
-
+    no_results_html = $('<li class="no-results">' + @results_none_found + ' "<span></span>"</li>')
     no_results_html.find("span").first().html(terms)
 
-    regex = new RegExp('^' + terms + '$', 'i')
-    selected = (option for option in @results_data when regex.test(option.value) and option.selected)
-    if (selected.length == 0)
+    if not selected
       no_results_html.append(' <a href="javascript:void(0);" class="option-add">Add this item</a>')
       no_results_html.find("a.option-add").bind "click", (evt) => this.select_add_option(terms)
 

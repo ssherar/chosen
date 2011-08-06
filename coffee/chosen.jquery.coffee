@@ -405,6 +405,7 @@ class Chosen extends AbstractChosen
     this.no_results_clear()
 
     results = 0
+    selected = false
 
     searchText = if @search_field.val() is @default_text then "" else $('<div/>').text($.trim(@search_field.val())).html()
     regexAnchor = if @search_contains then "" else "^"
@@ -447,9 +448,11 @@ class Chosen extends AbstractChosen
           else
             this.result_clear_highlight() if @result_highlight and result_id is @result_highlight.attr 'id'
             this.result_deactivate result
+        else if (@is_multiple and option.selected)
+          selected = true if regex.test option.html
 
     if results < 1 and searchText.length
-      this.no_results searchText
+      this.no_results searchText, selected
     else
       this.winnow_results_set_highlight()
 
@@ -462,16 +465,10 @@ class Chosen extends AbstractChosen
       this.result_do_highlight do_high if do_high?
 
   no_results: (terms) ->
-    if @options.addOption
-      no_results_html = $('<li class="no-results">' + @results_none_found + ' "<span></span>". <a href="javascript:void(0);" class="option-add">Add this item</a></li>')
-    else
-      no_results_html = $('<li class="no-results">' + @results_none_found + ' "<span></span>"</li>')
-
+    no_results_html = $('<li class="no-results">' + @results_none_found + ' "<span></span>"</li>')
     no_results_html.find("span").first().html(terms)
 
-    regex = new RegExp('^' + terms + '$', 'i')
-    selected = (option for option in @results_data when regex.test(option.value) and option.selected)
-    if (selected.length == 0)
+    if not selected
       no_results_html.append(' <a href="javascript:void(0);" class="option-add">Add this item</a>')
       no_results_html.find("a.option-add").bind "click", (evt) => this.select_add_option(terms)
 

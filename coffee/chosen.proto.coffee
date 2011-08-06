@@ -403,8 +403,7 @@ class @Chosen extends AbstractChosen
     selected = (option for option in @results_data when regex.test(option.value) and option.selected)
     add_item_link = if selected.length == 0 then ' <a href="javascript:void(0);" class="option-add">Add this item</a>' else ''
     @search_results.insert @no_results_temp.evaluate( terms: terms, add_item_link: add_item_link )
-    if selected.length == 0
-      @search_results.down("a.option-add").observe "click", (evt) => this.select_add_option(terms)
+    @search_results.down("a.option-add").observe "click", (evt) => this.select_add_option(terms) unless selected
 
   select_add_option: (terms) ->
     @form_field.insert @new_option_html.evaluate( terms: terms )

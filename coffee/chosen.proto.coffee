@@ -437,8 +437,6 @@ class Chosen extends AbstractChosen
           else
             this.result_clear_highlight() if $(result_id) is @result_highlight
             this.result_deactivate $(result_id)
-        else if (@is_multiple and option.selected)
-          selected = true if regex.test option.html
 
     if results < 1 and searchText.length
       this.no_results(searchText, selected)

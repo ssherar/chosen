@@ -411,6 +411,7 @@ class Chosen extends AbstractChosen
     regexAnchor = if @search_contains then "" else "^"
     regex = new RegExp(regexAnchor + searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'i')
     zregex = new RegExp(searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'i')
+    exactRegex = new RegExp('^' + searchText + '$', 'i')
 
     for option in @results_data
       if not option.empty

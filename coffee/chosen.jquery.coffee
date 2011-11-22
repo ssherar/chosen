@@ -268,6 +268,7 @@ class Chosen extends AbstractChosen
       @search_field.removeClass "default"
 
   search_results_mouseup: (evt) ->
+    return false
     target = if $(evt.target).hasClass "active-result" then $(evt.target) else $(evt.target).parents(".active-result").first()
     if target.length
       @result_highlight = target
@@ -403,6 +404,7 @@ class Chosen extends AbstractChosen
 
   winnow_results: ->
     this.no_results_clear()
+    this.create_option_clear()
 
     results = 0
     selected = false
@@ -411,7 +413,9 @@ class Chosen extends AbstractChosen
     regexAnchor = if @search_contains then "" else "^"
     regex = new RegExp(regexAnchor + searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'i')
     zregex = new RegExp(searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'i')
-    exactRegex = new RegExp('^' + searchText + '$', 'i')
+    eregex = new RegExp('^' + searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") + '$', 'i')
+
+    exact_result = false
 
     for option in @results_data
       if not option.empty
@@ -425,6 +429,9 @@ class Chosen extends AbstractChosen
           if regex.test option.html
             found = true
             results += 1
+            if eregex.test option.html
+              exact_result = true
+
           else if @enable_split_word_search and (option.html.indexOf(" ") >= 0 or option.html.indexOf("[") == 0)
             #TODO: replace this substitution of /\[\]/ with a list of characters to skip.
             parts = option.html.replace(/\[|\]/g, "").split(" ")
@@ -453,6 +460,7 @@ class Chosen extends AbstractChosen
     if results < 1 and searchText.length
       this.no_results searchText, selected
     else
+      this.show_create_option( searchText ) if @create_option and not exact_result and @persistent_create_option and searchText.length
       this.winnow_results_set_highlight()
 
   winnow_results_set_highlight: ->
@@ -466,16 +474,21 @@ class Chosen extends AbstractChosen
   no_results: (terms) ->
     no_results_html = $('<li class="no-results">' + @results_none_found + ' "<span></span>"</li>')
     no_results_html.find("span").first().html(terms)
-
-    if not selected
-      no_results_html.append(' <a href="javascript:void(0);" class="option-add">Add this item</a>')
-      no_results_html.find("a.option-add").bind "click", (evt) => this.select_add_option(terms)
-
     @search_results.append no_results_html
 
-  select_add_option: (terms) ->
-    if $.isFunction(@options.addOption)
-      @options.addOption.call this, terms, this.select_append_option
+    if @create_option
+      this.show_create_option( terms )
+
+  show_create_option: (terms) ->
+    create_option_html = $('<li class="create-option"><a href="javascript:void(0);">' + @create_option_text + '</a>: "' + terms + '"</li>').bind "click", (evt) => this.select_create_option(terms)
+    @search_results.append create_option_html
+
+  create_option_clear: ->
+    @search_results.find(".create-option").remove()
+
+  select_create_option: (terms) ->
+    if $.isFunction(@create_option)
+      @create_option.call this, terms, this.select_append_option
     else
       this.select_append_option( {value: terms, text: terms} )
 

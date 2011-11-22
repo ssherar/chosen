@@ -269,6 +269,7 @@ class Chosen extends AbstractChosen
       @search_field.removeClass "default"
 
   search_results_mouseup: (evt) ->
+    return false
     target = if $(evt.target).hasClass "active-result" then $(evt.target) else $(evt.target).parents(".active-result").first()
     if target.length
       @result_highlight = target
@@ -402,16 +403,21 @@ class Chosen extends AbstractChosen
   no_results: (terms) ->
     no_results_html = $('<li class="no-results">' + @results_none_found + ' "<span></span>"</li>')
     no_results_html.find("span").first().html(terms)
-
-    if not selected
-      no_results_html.append(' <a href="javascript:void(0);" class="option-add">Add this item</a>')
-      no_results_html.find("a.option-add").bind "click", (evt) => this.select_add_option(terms)
-
     @search_results.append no_results_html
 
-  select_add_option: (terms) ->
-    if $.isFunction(@options.addOption)
-      @options.addOption.call this, terms, this.select_append_option
+    if @create_option
+      this.show_create_option( terms )
+
+  show_create_option: (terms) ->
+    create_option_html = $('<li class="create-option"><a href="javascript:void(0);">' + @create_option_text + '</a>: "' + terms + '"</li>').bind "click", (evt) => this.select_create_option(terms)
+    @search_results.append create_option_html
+
+  create_option_clear: ->
+    @search_results.find(".create-option").remove()
+
+  select_create_option: (terms) ->
+    if $.isFunction(@create_option)
+      @create_option.call this, terms, this.select_append_option
     else
       this.select_append_option( {value: terms, text: terms} )
 

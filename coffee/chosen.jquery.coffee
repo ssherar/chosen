@@ -268,7 +268,6 @@ class Chosen extends AbstractChosen
       @search_field.removeClass "default"
 
   search_results_mouseup: (evt) ->
-    return false
     target = if $(evt.target).hasClass "active-result" then $(evt.target) else $(evt.target).parents(".active-result").first()
     if target.length
       @result_highlight = target
@@ -493,15 +492,12 @@ class Chosen extends AbstractChosen
       this.select_append_option( {value: terms, text: terms} )
 
   select_append_option: ( options ) ->
-    option = $('<option />', {value: options.value} ).text( options.text )
+    option = $('<option />', options ).attr('selected', 'selected')
     @form_field_jq.append option
     terms = @search_field.val()
     @form_field_jq.trigger "liszt:updated"
-    @search_field.val options.text
-    @search_field.trigger "keyup"
-    this.form_field_jq.trigger "change"
-    this.result_select()
-
+    @search_field.trigger('focus')
+  
   no_results_clear: ->
     @search_results.find(".no-results").remove()
 

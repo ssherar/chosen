@@ -104,6 +104,9 @@ class AbstractChosen
 
     this.outerHTML(group_el)
 
+  append_option: (option) ->
+    this.select_append_option(option)
+
   results_update_field: ->
     this.set_default_text()
     this.results_reset_cleanup() if not @is_multiple

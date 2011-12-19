@@ -18,9 +18,8 @@ class Chosen extends AbstractChosen
     @choice_temp = new Template('<li class="search-choice" id="#{id}"><span>#{choice}</span><a href="javascript:void(0)" class="search-choice-close" rel="#{position}"></a></li>')
     @choice_noclose_temp = new Template('<li class="search-choice search-choice-disabled" id="#{id}"><span>#{choice}</span></li>')
     @no_results_temp = new Template('<li class="no-results">' + @results_none_found + ' "<span>#{terms}</span>".#{add_item_link}</li>')
-    @new_option_html = new Template('<option value="#{terms}">#{terms}</option>')
     @new_option_temp = new Template('<option value="#{value}">#{text}</option>')
-    @add_link_temp = new Template(' <a href="javascript:void(0);" class="option-add">' + @add_option_text + '</a>')
+    @add_link_temp = new Template(' <a href="javascript:void(0);" class="option-add">' + @create_option_text + '</a>')
 
   set_up_html: ->
     @container_id = @form_field.identify().replace(/[^\w]/g, '_') + "_chzn"
@@ -467,12 +466,9 @@ class Chosen extends AbstractChosen
 
     @search_results.insert @no_results_temp.evaluate( terms: terms, add_item_link: add_item_link )
 
-    if @options.addOption and not selected
-      @search_results.down("a.option-add").observe "click", (evt) => this.select_add_option(terms) unless selected
-
-  select_add_option: ( terms ) ->
-    if Object.isFunction(@add_option)
-      @add_option.call this, terms, this.select_append_option
+  select_create_option: ( terms ) ->
+    if Object.isFunction( @create_option )
+      @create_option.call this, terms
     else
       this.select_append_option {value: terms, text: terms}
 
@@ -480,8 +476,7 @@ class Chosen extends AbstractChosen
     ###
       TODO Close options after adding
     ###
-
-    option = @new_option_temp.evaluate( value: options.value, text: options.text )
+    option = @new_option_temp.evaluate( options )
     @form_field.insert option
     Event.fire @form_field, "liszt:updated"
     this.result_select()

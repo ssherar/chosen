@@ -325,6 +325,11 @@ class Chosen extends AbstractChosen
   result_select: (evt) ->
     if @result_highlight
       high = @result_highlight
+      
+      if high.hasClass 'create-option'
+        this.select_create_option(@search_field.val())
+        return this.results_hide()
+      
       high_id = high.attr "id"
 
       this.result_clear_highlight()
@@ -479,7 +484,7 @@ class Chosen extends AbstractChosen
       this.show_create_option( terms )
 
   show_create_option: (terms) ->
-    create_option_html = $('<li class="create-option"><a href="javascript:void(0);">' + @create_option_text + '</a>: "' + terms + '"</li>').bind "click", (evt) => this.select_create_option(terms)
+    create_option_html = $('<li class="create-option active-result"><a href="javascript:void(0);">' + @create_option_text + '</a>: "' + terms + '"</li>').bind "click", (evt) => this.select_create_option(terms)
     @search_results.append create_option_html
 
   create_option_clear: ->

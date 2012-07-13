@@ -10,9 +10,9 @@ class @Chosen extends AbstractChosen
     # HTML Templates
     @single_temp = new Template('<a class="chosen-single chosen-default" tabindex="-1"><span>#{default}</span><div><b></b></div></a><div class="chosen-drop"><div class="chosen-search"><input type="text" autocomplete="off" /></div><ul class="chosen-results"></ul></div>')
     @multi_temp = new Template('<ul class="chosen-choices"><li class="search-field"><input type="text" value="#{default}" class="default" autocomplete="off" style="width:25px;" /></li></ul><div class="chosen-drop"><ul class="chosen-results"></ul></div>')
-    @no_results_temp = new Template('<li class="no-results">' + @results_none_found + ' "<span>#{terms}</span>".#{add_item_link}</li>')
+    @no_results_temp = new Template('<li class="no-results">' + @results_none_found + ' "<span>#{terms}</span>".</li>')
     @new_option_temp = new Template('<option value="#{value}">#{text}</option>')
-    @add_link_temp = new Template(' <a href="javascript:void(0);" class="option-add">' + @create_option_text + '</a>')
+    @create_option_temp = new Template('<li class="create-option"><a href="javascript:void(0);">#{text}</a>: #{terms}</li>')
 
   set_up_html: ->
     container_classes = ["chosen-container"]
@@ -399,24 +399,30 @@ class @Chosen extends AbstractChosen
 
     this.result_do_highlight do_high if do_high?
 
-  no_results: (terms, selected) ->
-    add_item_link = ''
+  no_results: (terms) ->
+    no_results_html = @no_results_temp.evaluate( terms: terms, text: @results_none_found )
 
-    if @add_option and not selected
-      add_item_link = @add_link_temp.evaluate( )
+    @search_results.insert no_results_html
 
-    @search_results.insert @no_results_temp.evaluate( terms: terms, add_item_link: add_item_link )
+    if @create_option
+      this.show_create_option( terms )
+
+  show_create_option: (terms) ->
+    create_option_html = @create_option_temp.evaluate( terms: terms, text: @create_option_text )
+    @search_results.insert create_option_html
+    @search_results.down(".create-option").observe "click", (evt) => this.select_create_option(terms)
+
+  create_option_clear: ->
+    co = null
+    co.remove() while co = @search_results.down(".create-option")
 
   select_create_option: ( terms ) ->
     if Object.isFunction( @create_option )
       @create_option.call this, terms
     else
-      this.select_append_option {value: terms, text: terms}
+      this.select_append_option( value: terms, text: terms )
 
   select_append_option: ( options ) ->
-    ###
-      TODO Close options after adding
-    ###
     option = @new_option_temp.evaluate( options )
     @form_field.insert option
     Event.fire @form_field, "liszt:updated"
@@ -425,7 +431,6 @@ class @Chosen extends AbstractChosen
   no_results_clear: ->
     nr = null
     nr.remove() while nr = @search_results.down(".no-results")
-
 
   keydown_arrow: ->
     if @results_showing and @result_highlight

@@ -403,7 +403,9 @@ class Chosen extends AbstractChosen
     regexAnchor = if @search_contains then "" else "^"
     regex = new RegExp(regexAnchor + searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'i')
     zregex = new RegExp(searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'i')
-    exactRegex = new RegExp('^' + searchText + '$', 'i')
+    eregex = new RegExp('^' + searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") + '$', 'i')
+
+    exact_result = false
 
     for option in @results_data
       if not option.empty
@@ -412,10 +414,14 @@ class Chosen extends AbstractChosen
         else
           found = false
           result_id = option.dom_id
+          result = $(result_id)
 
           if regex.test option.html
             found = true
             results += 1
+            if eregex.test option.html
+              exact_result = true
+
           else if @enable_split_word_search and (option.html.indexOf(" ") >= 0 or option.html.indexOf("[") == 0)
             #TODO: replace this substitution of /\[\]/ with a list of characters to skip.
             parts = option.html.replace(/\[|\]/g, "").split(" ")
@@ -433,9 +439,8 @@ class Chosen extends AbstractChosen
             else
               text = option.html
 
-            $(result_id).update text if $(result_id).innerHTML != text
-
-            this.result_activate $(result_id), option
+            result.update text if result.innerHTML != text
+            this.result_activate result, option
 
             $(@results_data[option.group_array_index].dom_id).setStyle({display: 'list-item'}) if option.group_array_index?
           else
@@ -443,8 +448,9 @@ class Chosen extends AbstractChosen
             this.result_deactivate $(result_id)
 
     if results < 1 and searchText.length
-      this.no_results(searchText)
+      this.no_results searchText
     else
+      this.show_create_option( searchText ) if @create_option and not exact_result and @persistent_create_option and searchText.length
       this.winnow_results_set_highlight()
 
   winnow_results_set_highlight: ->

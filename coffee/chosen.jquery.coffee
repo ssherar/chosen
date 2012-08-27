@@ -325,7 +325,7 @@ class Chosen extends AbstractChosen
   result_select: (evt) ->
     if @result_highlight
       high = @result_highlight
-      
+
       if high.hasClass 'create-option'
         this.select_create_option(@search_field.val())
         return this.results_hide()

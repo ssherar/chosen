@@ -167,7 +167,7 @@ class Chosen extends AbstractChosen
       @search_choices.find("li.search-choice").remove()
     else if not @is_multiple
       @selected_item.addClass("chzn-default").find("span").text(@default_text)
-      if @disable_search or @form_field.options.length <= @disable_search_threshold
+      if @disable_search or @form_field.options.length <= @disable_search_threshold and not @create_option
         @search_field[0].readOnly = true
         @container.addClass "chzn-container-single-nosearch"
       else

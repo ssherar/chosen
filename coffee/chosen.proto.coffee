@@ -19,7 +19,7 @@ class Chosen extends AbstractChosen
     @choice_noclose_temp = new Template('<li class="search-choice search-choice-disabled" id="#{id}"><span>#{choice}</span></li>')
     @no_results_temp = new Template('<li class="no-results">' + @results_none_found + ' "<span>#{terms}</span>".</li>')
     @new_option_temp = new Template('<option value="#{value}">#{text}</option>')
-    @create_option_temp = new Template('<li class="create-option"><a href="javascript:void(0);">#{text}</a>: #{terms}</li>')
+    @create_option_temp = new Template('<li class="create-option active-result"><a href="javascript:void(0);">#{text}</a>: "#{terms}"</li>')
 
   set_up_html: ->
     @container_id = @form_field.identify().replace(/[^\w]/g, '_') + "_chzn"
@@ -159,7 +159,7 @@ class Chosen extends AbstractChosen
       @search_choices.select("li.search-choice").invoke("remove")
     else if not @is_multiple
       @selected_item.addClassName("chzn-default").down("span").update(@default_text)
-      if @disable_search or @form_field.options.length <= @disable_search_threshold
+      if @disable_search or @form_field.options.length <= @disable_search_threshold and not @create_option
         @search_field.readOnly = true
         @container.addClassName "chzn-container-single-nosearch"
       else
@@ -465,7 +465,7 @@ class Chosen extends AbstractChosen
       this.result_do_highlight do_high if do_high?
 
   no_results: (terms) ->
-    no_results_html = @no_results_temp.evaluate( terms: terms, text: @results_none_found )
+    no_results_html = @no_results_temp.evaluate( terms: terms )
 
     @search_results.insert no_results_html
 

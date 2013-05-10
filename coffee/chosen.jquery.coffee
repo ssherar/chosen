@@ -462,7 +462,7 @@ class Chosen extends AbstractChosen
             this.result_deactivate result
 
     if results < 1 and searchText.length
-      this.no_results searchText, selected
+      this.no_results searchText
     else
       this.show_create_option( searchText ) if @create_option and not exact_result and @persistent_create_option and searchText.length
       this.winnow_results_set_highlight()

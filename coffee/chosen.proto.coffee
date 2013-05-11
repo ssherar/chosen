@@ -323,7 +323,7 @@ class @Chosen extends AbstractChosen
     if @result_highlight
       high = @result_highlight
 
-      if high.hasClassName 'create-option'
+      if high.hasClassName "create-option"
         this.select_create_option(@search_field.value)
         return this.results_hide()
 
@@ -408,9 +408,6 @@ class @Chosen extends AbstractChosen
     no_results_html = @no_results_temp.evaluate( terms: terms )
 
     @search_results.insert no_results_html
-
-    if @create_option
-      this.show_create_option( terms )
 
   show_create_option: (terms) ->
     create_option_html = @create_option_temp.evaluate( terms: terms, text: @create_option_text )

@@ -183,6 +183,9 @@ class AbstractChosen
       this.update_results_content this.results_option_build()
       this.winnow_results_set_highlight()
 
+    if @create_option and (results < 1 or (exact_result and @persistent_create_option)) and searchText.length
+      this.show_create_option( searchText )
+
   search_string_match: (search_string, regex) ->
     if regex.test search_string
       return true

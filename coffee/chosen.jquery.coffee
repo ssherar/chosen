@@ -326,7 +326,7 @@ class Chosen extends AbstractChosen
     if @result_highlight
       high = @result_highlight
 
-      if high.hasClass 'create-option'
+      if high.hasClass "create-option"
         this.select_create_option(@search_field.val())
         return this.results_hide()
 
@@ -407,9 +407,6 @@ class Chosen extends AbstractChosen
     no_results_html = $('<li class="no-results">' + @results_none_found + ' "<span></span>"</li>')
     no_results_html.find("span").first().html(terms)
     @search_results.append no_results_html
-
-    if @create_option
-      this.show_create_option( terms )
 
   show_create_option: (terms) ->
     create_option_html = $('<li class="create-option active-result"><a href="javascript:void(0);">' + @create_option_text + '</a>: "' + terms + '"</li>')

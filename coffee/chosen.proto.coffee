@@ -318,7 +318,7 @@ class Chosen extends AbstractChosen
     if @result_highlight
       high = @result_highlight
 
-      if high.hasClassName 'create-option'
+      if high.hasClassName "create-option"
         this.select_create_option(@search_field.value)
         return this.results_hide()
 
@@ -403,6 +403,7 @@ class Chosen extends AbstractChosen
     this.create_option_clear()
 
     results = 0
+    exact_result = false
 
     searchText = if @search_field.value is @default_text then "" else @search_field.value.strip().escapeHTML()
     regexAnchor = if @search_contains then "" else "^"
@@ -410,7 +411,6 @@ class Chosen extends AbstractChosen
     zregex = new RegExp(searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'i')
     eregex = new RegExp('^' + searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") + '$', 'i')
 
-    exact_result = false
 
     for option in @results_data
       if not option.empty
@@ -455,8 +455,10 @@ class Chosen extends AbstractChosen
     if results < 1 and searchText.length
       this.no_results searchText
     else
-      this.show_create_option( searchText ) if @create_option and not exact_result and @persistent_create_option and searchText.length
       this.winnow_results_set_highlight()
+
+    if @create_option and (results < 1 or (exact_result and @persistent_create_option)) and searchText.length
+      this.show_create_option( searchText )
 
   winnow_results_set_highlight: ->
     if not @result_highlight
@@ -473,9 +475,6 @@ class Chosen extends AbstractChosen
     no_results_html = @no_results_temp.evaluate( terms: terms )
 
     @search_results.insert no_results_html
-
-    if @create_option
-      this.show_create_option( terms )
 
   show_create_option: (terms) ->
     create_option_html = @create_option_temp.evaluate( terms: terms, text: @create_option_text )

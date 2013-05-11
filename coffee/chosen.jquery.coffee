@@ -326,7 +326,7 @@ class Chosen extends AbstractChosen
     if @result_highlight
       high = @result_highlight
 
-      if high.hasClass 'create-option'
+      if high.hasClass "create-option"
         this.select_create_option(@search_field.val())
         return this.results_hide()
       
@@ -411,15 +411,13 @@ class Chosen extends AbstractChosen
     this.create_option_clear()
 
     results = 0
-    selected = false
+    exact_result = false
 
     searchText = if @search_field.val() is @default_text then "" else $('<div/>').text($.trim(@search_field.val())).html()
     regexAnchor = if @search_contains then "" else "^"
     regex = new RegExp(regexAnchor + searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'i')
     zregex = new RegExp(searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'i')
     eregex = new RegExp('^' + searchText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") + '$', 'i')
-
-    exact_result = false
 
     for option in @results_data
       if not option.empty
@@ -464,8 +462,10 @@ class Chosen extends AbstractChosen
     if results < 1 and searchText.length
       this.no_results searchText
     else
-      this.show_create_option( searchText ) if @create_option and not exact_result and @persistent_create_option and searchText.length
       this.winnow_results_set_highlight()
+
+    if @create_option and (results < 1 or (exact_result and @persistent_create_option)) and searchText.length
+      this.show_create_option( searchText )
 
   winnow_results_set_highlight: ->
     if not @result_highlight
@@ -479,9 +479,6 @@ class Chosen extends AbstractChosen
     no_results_html = $('<li class="no-results">' + @results_none_found + ' "<span></span>"</li>')
     no_results_html.find("span").first().html(terms)
     @search_results.append no_results_html
-
-    if @create_option
-      this.show_create_option( terms )
 
   show_create_option: (terms) ->
     create_option_html = $('<li class="create-option active-result"><a href="javascript:void(0);">' + @create_option_text + '</a>: "' + terms + '"</li>')

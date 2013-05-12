@@ -453,7 +453,7 @@ class Chosen extends AbstractChosen
             this.result_deactivate $(result_id)
 
     if results < 1 and searchText.length
-      this.no_results searchText
+      this.no_results searchText unless @create_option and @skip_no_results
     else
       this.winnow_results_set_highlight()
 

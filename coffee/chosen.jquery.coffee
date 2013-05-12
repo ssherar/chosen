@@ -464,7 +464,7 @@ class Chosen extends AbstractChosen
     else
       this.winnow_results_set_highlight()
 
-    if @create_option and (results < 1 or (exact_result and @persistent_create_option)) and searchText.length
+    if @create_option and (results < 1 or (!exact_result and @persistent_create_option)) and searchText.length
       this.show_create_option( searchText )
 
   winnow_results_set_highlight: ->

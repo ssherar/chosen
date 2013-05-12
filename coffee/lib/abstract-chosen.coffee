@@ -31,6 +31,7 @@ class AbstractChosen
     @display_disabled_options = if @options.display_disabled_options? then @options.display_disabled_options else true
     @create_option = @options.create_option || false
     @persistent_create_option = @options.persistent_create_option || false
+    @skip_no_results = @options.skip_no_results || false
 
   set_default_text: ->
     if @form_field.getAttribute("data-placeholder")
@@ -178,7 +179,7 @@ class AbstractChosen
 
     if results < 1 and searchText.length
       this.update_results_content ""
-      this.no_results searchText
+      this.no_results searchText unless @create_option and @skip_no_results
     else
       this.update_results_content this.results_option_build()
       this.winnow_results_set_highlight()

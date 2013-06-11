@@ -498,6 +498,7 @@ class Chosen extends AbstractChosen
     @form_field_jq.append option
     terms = @search_field.val()
     @form_field_jq.trigger "liszt:updated"
+    @form_field_jq.trigger "change"
     @search_field.trigger('focus')
   
   no_results_clear: ->

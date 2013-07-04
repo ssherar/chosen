@@ -226,6 +226,12 @@ class Chosen extends AbstractChosen
     @container.addClass "chosen-with-drop"
     @form_field_jq.trigger("chosen:showing_dropdown", {chosen: this})
 
+    windowHeight = $(window).height()
+    dropdownTop = @container.offset().top + @container.height() - $(window).scrollTop()
+    totalHeight = @dropdown.height() + dropdownTop
+
+    @dropdown.toggleClass 'chzn-above', totalHeight > windowHeight
+
     @results_showing = true
 
     @search_field.focus()

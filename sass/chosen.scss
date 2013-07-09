@@ -28,7 +28,7 @@ $chosen-sprite-retina: image-url('chosen-sprite@2x.png');
   }
   .chosen-drop.chosen-above {
     top: auto;
-    bottom: 29px;
+    bottom: 100%;
     border: solid #aaa;
     border-width: 1px 1px 0 1px;
     box-shadow: 0 -4px 5px rgba(#000,.15);
@@ -130,6 +130,9 @@ $chosen-sprite-retina: image-url('chosen-sprite@2x.png');
     margin-top: -1px;
     border-radius: 0 0 4px 4px;
     background-clip: padding-box;
+  }
+  &.chosen-above .chosen-drop {
+    border-radius: 4px 4px 0 0;
   }
   &.chosen-container-single-nosearch .chosen-search {
     position: absolute;
@@ -305,6 +308,13 @@ $chosen-sprite-retina: image-url('chosen-sprite@2x.png');
         background-position: -18px 2px;
       }
     }
+  }
+  &.chosen-with-drop.chosen-above .chosen-single {
+    border-top-width: 0;
+    padding-top: 1px;
+    box-shadow: 0 -1px 0 #fff inset;
+    @include background-image(linear-gradient(#fff 20%, #f6f6f6 50%, #eee 52%, #f4f4f4 100%));
+    border-radius: 0 0 4px 4px;
   }
   .chosen-choices {
     border: 1px solid #5897fb;

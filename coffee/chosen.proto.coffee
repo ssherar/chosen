@@ -225,9 +225,11 @@ class @Chosen extends AbstractChosen
     totalHeight = @dropdown.getHeight() + dropdownTop
 
     if totalHeight > windowHeight
-      @dropdown.addClassName 'chzn-above'
+      @container.addClassName 'chosen-above'
+      @dropdown.addClassName 'chosen-above'
     else
-      @dropdown.removeClassName 'chzn-above'
+      @container.removeClassName 'chosen-above'
+      @dropdown.removeClassName 'chosen-above'
 
     @results_showing = true
 
@@ -244,6 +246,7 @@ class @Chosen extends AbstractChosen
       this.result_clear_highlight()
 
       @container.removeClassName "chosen-with-drop"
+      @container.removeClassName "chosen-above"
       @form_field.fire("chosen:hiding_dropdown", {chosen: this})
 
     @results_showing = false

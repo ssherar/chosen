@@ -424,9 +424,9 @@ class Chosen extends AbstractChosen
     option = $('<option />', options ).attr('selected', 'selected')
     @form_field_jq.append option
     terms = @search_field.val()
-    @form_field_jq.trigger "liszt:updated"
+    @form_field_jq.trigger "chosen:updated"
     @form_field_jq.trigger "change"
-    @search_field.trigger('focus')
+    @search_field.trigger "focus"
   
   no_results_clear: ->
     @search_results.find(".no-results").remove()

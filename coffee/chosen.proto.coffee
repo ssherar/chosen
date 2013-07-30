@@ -427,7 +427,7 @@ class @Chosen extends AbstractChosen
   select_append_option: ( options ) ->
     option = @new_option_temp.evaluate( options )
     @form_field.insert option
-    Event.fire @form_field, "liszt:updated"
+    Event.fire @form_field, "chosen:updated"
     @form_field.simulate("change") if typeof Event.simulate is 'function'
     this.result_select()
 

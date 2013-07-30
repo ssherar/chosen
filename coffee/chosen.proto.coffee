@@ -428,8 +428,9 @@ class @Chosen extends AbstractChosen
     option = @new_option_temp.evaluate( options )
     @form_field.insert option
     Event.fire @form_field, "chosen:updated"
-    @form_field.simulate("change") if typeof Event.simulate is 'function'
-    this.result_select()
+    if typeof Event.simulate is 'function'
+      @form_field.simulate("change")
+      @search_field.simulate("focus")
 
   no_results_clear: ->
     nr = null

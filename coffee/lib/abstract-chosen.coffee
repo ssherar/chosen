@@ -140,6 +140,7 @@ class AbstractChosen
 
       option.search_match = false
       results_group = null
+      search_match = null
 
       if this.include_option_in_results(option)
 
@@ -153,15 +154,14 @@ class AbstractChosen
           results_group.active_options += 1
                 
         unless option.group and not @group_search
-
           option.search_text = if option.group then option.label else option.html
-          option.search_match = regex.test(option.search_text)
+          search_match = this.search_string_match(option.search_text, regex)
+          option.search_match = search_match?
           results += 1 if option.search_match and not option.group
 
           if option.search_match
             if searchText.length
-              match = regex.exec(option.search_text)
-              startpos = match.index
+              startpos = search_match.index
               text = option.search_text.substr(0, startpos + searchText.length) + '</em>' + option.search_text.substr(startpos + searchText.length)
               option.search_text = text.substr(0, startpos) + '<em>' + text.substr(startpos)
 
@@ -178,6 +178,9 @@ class AbstractChosen
     else
       this.update_results_content this.results_option_build()
       this.winnow_results_set_highlight()
+
+  search_string_match: (search_string, regex) ->
+    regex.exec(search_string)
 
   choices_count: ->
     return @selected_option_count if @selected_option_count?

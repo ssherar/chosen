@@ -40,14 +40,14 @@ class Chosen extends AbstractChosen
     @container = ($ "<div />", container_props)
 
     if @is_multiple
-      @container.html '<ul class="chosen-choices"><li class="search-field"><input type="text" value="' + @default_text + '" class="default" autocomplete="off" style="width:25px;" /></li></ul><div class="chosen-drop"><ul class="chosen-results"></ul></div>'
+      @container.html '<ul class="chosen-choices"><li class="search-field"><div class="chosen-search-input" contenteditable>' + @default_text + '</div></li></ul><div class="chosen-drop"><ul class="chosen-results"></ul></div>'
     else
-      @container.html '<a class="chosen-single chosen-default" tabindex="-1"><span>' + @default_text + '</span><div><b></b></div></a><div class="chosen-drop"><div class="chosen-search"><input type="text" autocomplete="off" /></div><ul class="chosen-results"></ul></div>'
+      @container.html '<a class="chosen-single chosen-default" tabindex="-1"><span>' + @default_text + '</span><div><b></b></div></a><div class="chosen-drop"><div class="chosen-search"><div class="chosen-search-input" contenteditable></div></div><ul class="chosen-results"></ul></div>'
 
     @form_field_jq.hide().after @container
     @dropdown = @container.find('div.chosen-drop').first()
 
-    @search_field = @container.find('input').first()
+    @search_field = @container.find('.chosen-search-input').first()
     @search_results = @container.find('ul.chosen-results').first()
     this.search_field_scale()
 
@@ -107,12 +107,12 @@ class Chosen extends AbstractChosen
     @is_disabled = @form_field_jq[0].disabled
     if(@is_disabled)
       @container.addClass 'chosen-disabled'
-      @search_field[0].disabled = true
+      # @search_field[0].disabled = true
       @selected_item.unbind "focus.chosen", @activate_action if !@is_multiple
       this.close_field()
     else
       @container.removeClass 'chosen-disabled'
-      @search_field[0].disabled = false
+      # @search_field[0].disabled = false
       @selected_item.bind "focus.chosen", @activate_action if !@is_multiple
 
   container_mousedown: (evt) ->
@@ -122,7 +122,7 @@ class Chosen extends AbstractChosen
 
       if not (evt? and ($ evt.target).hasClass "search-choice-close")
         if not @active_field
-          @search_field.val "" if @is_multiple
+          @search_field.empty() if @is_multiple
           $(document).bind 'click.chosen', @click_test_action
           this.results_show()
         else if not @is_multiple and evt and (($(evt.target)[0] == @selected_item[0]) || $(evt.target).parents("a.chosen-single").length)
@@ -160,7 +160,7 @@ class Chosen extends AbstractChosen
     @container.addClass "chosen-container-active"
     @active_field = true
 
-    @search_field.val(@search_field.val())
+    @search_field.text(@search_field.val())
     @search_field.focus()
 
 
@@ -262,10 +262,10 @@ class Chosen extends AbstractChosen
 
   show_search_field_default: ->
     if @is_multiple and this.choices_count() < 1 and not @active_field
-      @search_field.val(@default_text)
+      @search_field.text(@default_text)
       @search_field.addClass "default"
     else
-      @search_field.val("")
+      @search_field.empty()
       @search_field.removeClass "default"
 
   search_results_mouseup: (evt) ->
@@ -303,7 +303,7 @@ class Chosen extends AbstractChosen
     if this.result_deselect( link[0].getAttribute("data-option-array-index") )
       this.show_search_field_default()
 
-      this.results_hide() if @is_multiple and this.choices_count() > 0 and @search_field.val().length < 1
+      this.results_hide() if @is_multiple and this.choices_count() > 0 and @search_field.text().length < 1
 
       link.parents('li').first().remove()
 
@@ -350,7 +350,7 @@ class Chosen extends AbstractChosen
 
       this.results_hide() unless (evt.metaKey or evt.ctrlKey) and @is_multiple
 
-      @search_field.val ""
+      @search_field.empty()
 
       @form_field_jq.trigger "change", {'selected': @form_field.options[item.options_index].value} if @is_multiple || @form_field.selectedIndex != @current_selectedIndex
       @current_selectedIndex = @form_field.selectedIndex
@@ -390,7 +390,7 @@ class Chosen extends AbstractChosen
     @selected_item.addClass("chosen-single-with-deselect")
 
   get_search_text: ->
-    if @search_field.val() is @default_text then "" else $('<div/>').text($.trim(@search_field.val())).html()
+    if @search_field.text() is @default_text then "" else $('<div/>').text($.trim(@search_field.text())).html()
 
   winnow_results_set_highlight: ->
 
@@ -482,7 +482,7 @@ class Chosen extends AbstractChosen
         style_block += style + ":" + @search_field.css(style) + ";"
 
       div = $('<div />', { 'style' : style_block })
-      div.text @search_field.val()
+      div.text @search_field.text()
       $('body').append div
 
       w = div.width() + 25

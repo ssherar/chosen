@@ -8,8 +8,8 @@ class @Chosen extends AbstractChosen
     super()
 
     # HTML Templates
-    @single_temp = new Template('<a class="chosen-single chosen-default" tabindex="-1"><span>#{default}</span><div><b></b></div></a><div class="chosen-drop"><div class="chosen-search"><input type="text" autocomplete="off" /></div><ul class="chosen-results"></ul></div>')
-    @multi_temp = new Template('<ul class="chosen-choices"><li class="search-field"><input type="text" value="#{default}" class="default" autocomplete="off" style="width:25px;" /></li></ul><div class="chosen-drop"><ul class="chosen-results"></ul></div>')
+    @single_temp = new Template('<a class="chosen-single chosen-default" tabindex="-1"><span>#{default}</span><div><b></b></div></a><div class="chosen-drop"><div class="chosen-search"><div class="chosen-search-input" contenteditable></div><ul class="chosen-results"></ul></div>')
+    @multi_temp = new Template('<ul class="chosen-choices"><li class="search-field"><div class="chosen-search-input" contenteditable>#{default}</div></li></ul><div class="chosen-drop"><ul class="chosen-results"></ul></div>')
     @no_results_temp = new Template('<li class="no-results">' + @results_none_found + ' "<span>#{terms}</span>"</li>')
 
   set_up_html: ->
@@ -30,7 +30,7 @@ class @Chosen extends AbstractChosen
     @form_field.hide().insert({ after: @container })
     @dropdown = @container.down('div.chosen-drop')
 
-    @search_field = @container.down('input')
+    @search_field = @container.down('.chosen-search-input')
     @search_results = @container.down('ul.chosen-results')
     this.search_field_scale()
 
@@ -119,7 +119,7 @@ class @Chosen extends AbstractChosen
 
       if not (evt? and evt.target.hasClassName "search-choice-close")
         if not @active_field
-          @search_field.clear() if @is_multiple
+          @search_field.update() if @is_multiple
           document.observe "click", @click_test_action
           this.results_show()
         else if not @is_multiple and evt and (evt.target is @selected_item || evt.target.up("a.chosen-single"))
@@ -156,7 +156,7 @@ class @Chosen extends AbstractChosen
     @container.addClassName "chosen-container-active"
     @active_field = true
 
-    @search_field.value = @search_field.value
+    # @search_field.update( @search_field.innerText )
     @search_field.focus()
 
   test_active_click: (evt) ->
@@ -223,7 +223,7 @@ class @Chosen extends AbstractChosen
     @results_showing = true
 
     @search_field.focus()
-    @search_field.value = @search_field.value
+    # @search_field.update(@search_field.innerText)
 
     this.winnow_results()
 
@@ -256,10 +256,10 @@ class @Chosen extends AbstractChosen
 
   show_search_field_default: ->
     if @is_multiple and this.choices_count() < 1 and not @active_field
-      @search_field.value = @default_text
+      @search_field.update(@default_text)
       @search_field.addClassName "default"
     else
-      @search_field.value = ""
+      @search_field.update()
       @search_field.removeClassName "default"
 
   search_results_mouseup: (evt) ->
@@ -297,7 +297,7 @@ class @Chosen extends AbstractChosen
     if this.result_deselect link.readAttribute("rel")
       this.show_search_field_default()
 
-      this.results_hide() if @is_multiple and this.choices_count() > 0 and @search_field.value.length < 1
+      this.results_hide() if @is_multiple and this.choices_count() > 0 and @search_field.innerText.length < 1
 
       link.up('li').remove()
 
@@ -346,7 +346,7 @@ class @Chosen extends AbstractChosen
 
       this.results_hide() unless (evt.metaKey or evt.ctrlKey) and @is_multiple
 
-      @search_field.value = ""
+      @search_field.update()
 
       @form_field.simulate("change") if typeof Event.simulate is 'function' && (@is_multiple || @form_field.selectedIndex != @current_selectedIndex)
       @current_selectedIndex = @form_field.selectedIndex
@@ -386,7 +386,7 @@ class @Chosen extends AbstractChosen
     @selected_item.addClassName("chosen-single-with-deselect")
 
   get_search_text: ->
-    if @search_field.value is @default_text then "" else @search_field.value.strip().escapeHTML()
+    if @search_field.innerText is @default_text then "" else @search_field.innerText.strip().escapeHTML()
 
   winnow_results_set_highlight: ->
     if not @is_multiple
@@ -452,7 +452,7 @@ class @Chosen extends AbstractChosen
 
     switch stroke
       when 8
-        @backstroke_length = this.search_field.value.length
+        @backstroke_length = this.search_field.innerText.length
         break
       when 9
         this.result_select(evt) if this.results_showing and not @is_multiple
@@ -481,7 +481,7 @@ class @Chosen extends AbstractChosen
       for style in styles
         style_block += style + ":" + @search_field.getStyle(style) + ";"
 
-      div = new Element('div', { 'style' : style_block }).update(@search_field.value.escapeHTML())
+      div = new Element('div', { 'style' : style_block }).update(@search_field.innerText)
       document.body.appendChild(div)
 
       w = Element.measure(div, 'width') + 25

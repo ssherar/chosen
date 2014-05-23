@@ -32,6 +32,7 @@ class AbstractChosen
     @create_option = @options.create_option || false
     @persistent_create_option = @options.persistent_create_option || false
     @skip_no_results = @options.skip_no_results || false
+    @insert_on_enter = @options.insert_on_enter || false
 
   set_default_text: ->
     if @form_field.getAttribute("data-placeholder")
